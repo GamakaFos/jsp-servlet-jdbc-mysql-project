@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,17 +26,18 @@ public class UserDAO {
 	
 	
 	//insert user into db
-	public void insertUser(User user) {
+	public void insertUser(User user) throws ClassNotFoundException {
 		try(Connection connection = JDBCUtils.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)){
 			preparedStatement.setString(1, user.getName());
 			preparedStatement.setString(2, user.getEmail());
 			preparedStatement.setString(3, user.getCountry());
 			preparedStatement.executeUpdate();
-			
-		} catch (Exception e){
-			System.err.println(e.getLocalizedMessage());
-		}
+		} catch (SQLException e) {
+			JDBCUtils.printSQLException(e);
+		} catch (Exception e) {
+			e.printStackTrace();;
+		} 
 	}
 	
 	
@@ -55,6 +57,8 @@ public class UserDAO {
 				user = new User(name, email, country);
 			}
 			
+		} catch (SQLException e) {
+			JDBCUtils.printSQLException(e);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,6 +84,8 @@ public class UserDAO {
 				users.add(new User(id, name, email, country));
 			}
 			
+		} catch (SQLException e) {
+			JDBCUtils.printSQLException(e);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -99,7 +105,9 @@ public class UserDAO {
 			rowDeleted = preparedStatement.executeUpdate() > 0;
 			
 			
-		} catch (Exception e) {
+		} catch (SQLException e) {
+			JDBCUtils.printSQLException(e);
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -121,7 +129,9 @@ public class UserDAO {
 			
 			rowUpdated = preparedStatement.executeUpdate() > 0;
 			
-		} catch (Exception e) {
+		} catch (SQLException e) {
+			JDBCUtils.printSQLException(e);
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		
